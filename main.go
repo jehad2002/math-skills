@@ -38,24 +38,31 @@ func calculateStats(data []float64) (int, int, int, int) {
 	for _, value := range data {
 		sum += value
 	}
+
 	average := int(math.Round(sum / float64(len(data))))
 
 	sortedData := make([]float64, len(data))
 	copy(sortedData, data)
 	sort.Float64s(sortedData)
-	medianIndex := len(sortedData) / 2
-	median := int(math.Round((sortedData[medianIndex-1] + sortedData[medianIndex]) / 2))
+
+	var median float64
+	if len(sortedData)%2 == 0 {
+		median = (sortedData[len(sortedData)/2-1] + sortedData[len(sortedData)/2]) / 2
+	} else {
+		median = sortedData[len(sortedData)/2]
+	}
+	medianInt := int(math.Round(median))
 
 	var variance float64
 	for _, value := range data {
 		variance += math.Pow(value-float64(average), 2)
 	}
+
 	variance = variance / float64(len(data))
 	varianceInt := int(math.Round(variance))
-
 	stdDev := int(math.Round(math.Sqrt(variance)))
 
-	return average, median, varianceInt, stdDev
+	return average, medianInt, varianceInt, stdDev
 }
 
 func main() {
@@ -72,7 +79,6 @@ func main() {
 	}
 
 	avg, median, variance, stdDev := calculateStats(data)
-
 	fmt.Println("Average:", avg)
 	fmt.Println("Median:", median)
 	fmt.Println("Variance:", variance)
